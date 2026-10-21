@@ -19,8 +19,9 @@ export async function provisionIdentity(
 
   let identityId = await findIdentityId(token, userId);
   const createdIdentity = !identityId;
+  let cprNumber: string | undefined;
   if (!identityId) {
-    await createIdentity(token, userId);
+    ({ cprNumber } = await createIdentity(token, userId));
     identityId = await findIdentityId(token, userId);
     if (!identityId) throw new Error("MitID did not return the newly created Identity");
   }
@@ -34,7 +35,7 @@ export async function provisionIdentity(
   }
 
   const outcome = createdIdentity ? "created-identity" : addedSimulator ? "added-simulator" : "added-existing";
-  return { identity: { userId, identityId, authenticatorId }, outcome };
+  return { identity: { userId, identityId, authenticatorId, cprNumber }, outcome };
 }
 
 async function findSimulatorAuthenticatorId(token: string, identityId: string): Promise<string | undefined> {

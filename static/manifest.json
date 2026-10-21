@@ -3,7 +3,7 @@
   "name": "MitID Auto Authenticator",
   "version": "0.1.0",
   "description": "Approves MitID pre-production Login requests for your test Identities.",
-  "permissions": ["storage"],
+  "permissions": ["storage", "clipboardWrite"],
   "host_permissions": ["https://pp.mitid.dk/*"],
   "background": {
     "service_worker": "background.js",

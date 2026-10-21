@@ -8,6 +8,10 @@ A browser extension that approves MitID test-environment logins for developers, 
 A MitID test login in the pre-production environment, known by its user ID (e.g. `Theo404`).
 _Avoid_: User, test person
 
+**CPR number**:
+The Danish personal identification number registered on an Identity in the MitID test environment.
+_Avoid_: personnummer, CPR-nr.
+
 **Simulator**:
 The simulated MitID code app attached to an Identity, standing in for a phone.
 _Avoid_: Authenticator, app, device

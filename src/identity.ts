@@ -2,6 +2,7 @@ export interface Identity {
   userId: string;
   identityId: string;
   authenticatorId: string;
+  cprNumber?: string;
 }
 
 export type SimulatorRef = Pick<Identity, "identityId" | "authenticatorId">;
@@ -16,6 +17,10 @@ export function withIdentity(identities: readonly Identity[], identity: Identity
 
 export function withoutIdentity(identities: readonly Identity[], userId: string): Identity[] {
   return identities.filter((identity) => !sameUserId(identity.userId, userId));
+}
+
+export function withIdentityUpdated(identities: readonly Identity[], updated: Identity): Identity[] {
+  return identities.map((identity) => (sameUserId(identity.userId, updated.userId) ? updated : identity));
 }
 
 export function withIdentityMoved(identities: readonly Identity[], userId: string, offset: -1 | 1): Identity[] {

@@ -1,6 +1,7 @@
 import { type Identity, withIdentityMoved, withoutIdentity } from "./identity.js";
 import { APPROVE_FIRST_IDENTITY_COMMAND, sendCommand } from "./messages.js";
-import { loadLatestStatus, onStatusReported, type Status } from "./status.js";
+import { cprNumberOf } from "./cprNumber.js";
+import { loadLatestStatus, onStatusReported, reportStatus, type Status } from "./status.js";
 import { loadIdentities, onIdentitiesChanged, saveIdentities } from "./store.js";
 
 const addForm = document.querySelector<HTMLFormElement>("#add-form")!;
@@ -36,10 +37,28 @@ async function runRowAction(action: string, userId: string): Promise<void> {
     sendCommand({ type: "approve", userId });
     return;
   }
+  if (action === "copy-cpr") {
+    await copyCprNumber(userId);
+    return;
+  }
   const identities = await loadIdentities();
   if (action === "up") await saveIdentities(withIdentityMoved(identities, userId, -1));
   if (action === "down") await saveIdentities(withIdentityMoved(identities, userId, 1));
   if (action === "remove") await saveIdentities(withoutIdentity(identities, userId));
+}
+
+async function copyCprNumber(userId: string): Promise<void> {
+  try {
+    const cprNumber = await cprNumberOf(userId);
+    await navigator.clipboard.writeText(cprNumber);
+    reportStatus({ kind: "success", text: `Copied CPR number ${cprNumber} for ${userId}` });
+  } catch (error) {
+    reportStatus({ kind: "error", text: `Could not copy the CPR number for ${userId}: ${messageOf(error)}` });
+  }
+}
+
+function messageOf(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 function renderIdentities(identities: Identity[]): void {

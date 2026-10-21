@@ -62,7 +62,7 @@ h2 {
 }
 
 body.popup {
-  width: 340px;
+  width: 380px;
   padding: 0;
   background: var(--surface);
 }

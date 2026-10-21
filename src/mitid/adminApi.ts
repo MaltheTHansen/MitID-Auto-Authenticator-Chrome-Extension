@@ -26,6 +26,10 @@ export interface AdminCredential {
   clientSecret: string;
 }
 
+interface IdentityDetails {
+  cprNumber?: string;
+}
+
 interface Authenticator {
   authenticatorId: string;
   state: string;
@@ -58,8 +62,18 @@ export async function findIdentityId(token: string, userId: string): Promise<str
   return result.identities?.[0]?.identityId;
 }
 
-export async function createIdentity(token: string, userId: string): Promise<void> {
-  const mockIdentity = await sendForJson<Record<string, unknown>>(
+export async function fetchCprNumber(token: string, identityId: string): Promise<string> {
+  const result = await sendForJson<IdentityDetails | IdentityDetails[]>(
+    "identity details",
+    `${MITID_PREPROD}/administration/v9/identities/${identityId}`,
+    { headers: bearer(token) },
+  );
+  const details = Array.isArray(result) ? result[0] : result;
+  return required(details?.cprNumber, "cprNumber");
+}
+
+export async function createIdentity(token: string, userId: string): Promise<{ cprNumber?: string }> {
+  const mockIdentity = await sendForJson<IdentityDetails & Record<string, unknown>>(
     "test person autofill",
     `${MITID_PREPROD}/mitid-test-api/v4/testpersons`,
     postJson({ countryCode: "DK" }, bearer(token)),
@@ -69,6 +83,7 @@ export async function createIdentity(token: string, userId: string): Promise<voi
     `${MITID_PREPROD}/mitid-test-api/v4/identities`,
     postJson({ ...mockIdentity, identity: userId }, bearer(token)),
   );
+  return { cprNumber: mockIdentity.cprNumber };
 }
 
 export async function listActiveAuthenticatorIds(token: string, identityId: string): Promise<string[]> {

@@ -2,15 +2,11 @@ import { type AddOutcome, provisionIdentity } from "./addIdentity.js";
 import { approveLoginRequest } from "./approve.js";
 import { flashBadge, markApprovalFinished, markApprovalStarted } from "./badge.js";
 import { findIdentity, type Identity, userIdKey, withIdentity } from "./identity.js";
-import { APPROVE_FIRST_IDENTITY_COMMAND, broadcastStatus, type Command, type Status } from "./messages.js";
+import { APPROVE_FIRST_IDENTITY_COMMAND, type Command } from "./messages.js";
+import { reportStatus, type Status } from "./status.js";
 import { loadAdminCredential, loadIdentities, saveIdentities } from "./store.js";
 
-const PANEL_WINDOW_SIZE = { width: 380, height: 640 };
-
 const operationsInProgress = new Set<string>();
-let panelWindowId: number | undefined;
-
-openPanelFromToolbarButton();
 
 chrome.commands.onCommand.addListener((command) => {
   if (command === APPROVE_FIRST_IDENTITY_COMMAND) void approveFirstIdentity();
@@ -21,34 +17,13 @@ chrome.runtime.onMessage.addListener((command: Command) => {
   if (command.type === "add-identity") void addIdentity(command.userId);
 });
 
-function openPanelFromToolbarButton(): void {
-  if (chrome.sidePanel) {
-    void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
-  } else {
-    chrome.action.onClicked.addListener(() => void openPanelWindow());
-  }
-}
-
-async function openPanelWindow(): Promise<void> {
-  if (panelWindowId !== undefined) {
-    try {
-      await chrome.windows.update(panelWindowId, { focused: true });
-      return;
-    } catch {
-      panelWindowId = undefined;
-    }
-  }
-  const panelWindow = await chrome.windows.create({ url: "sidepanel.html", type: "popup", ...PANEL_WINDOW_SIZE });
-  panelWindowId = panelWindow?.id;
-}
-
 async function approveFirstIdentity(): Promise<void> {
   const [first] = await loadIdentities();
   if (first) {
     await approve(first);
   } else {
     flashBadge("failure");
-    broadcastStatus({ kind: "error", text: "No Identities to approve. Add one in the side panel first." });
+    reportStatus({ kind: "error", text: "No Identities to approve. Add one in the popup first." });
   }
 }
 
@@ -60,10 +35,10 @@ async function approveByUserId(userId: string): Promise<void> {
 function approve(identity: Identity): Promise<void> {
   return exclusively(`approve:${userIdKey(identity.userId)}`, async () => {
     markApprovalStarted();
-    broadcastStatus({ kind: "progress", text: `Waiting for a Login request for ${identity.userId}…` });
+    reportStatus({ kind: "progress", text: `Waiting for a Login request for ${identity.userId}…` });
     const status = await approvalStatus(identity);
     markApprovalFinished(status.kind === "success" ? "success" : "failure");
-    broadcastStatus(status);
+    reportStatus(status);
   });
 }
 
@@ -86,27 +61,27 @@ function addIdentity(rawUserId: string): Promise<void> {
 
   return exclusively(`add:${userIdKey(userId)}`, async () => {
     if (findIdentity(await loadIdentities(), userId)) {
-      broadcastStatus(alreadyListedStatus(userId));
+      reportStatus(alreadyListedStatus(userId));
       return;
     }
     const credential = await loadAdminCredential();
     if (!credential) {
-      broadcastStatus({ kind: "error", text: "Add the MitID admin credential in Options before adding Identities." });
+      reportStatus({ kind: "error", text: "Add the MitID admin credential in Options before adding Identities." });
       return;
     }
 
-    broadcastStatus({ kind: "progress", text: `Adding ${userId}…` });
+    reportStatus({ kind: "progress", text: `Adding ${userId}…` });
     try {
       const { identity, outcome } = await provisionIdentity(userId, credential);
       const identities = await loadIdentities();
       if (findIdentity(identities, userId)) {
-        broadcastStatus(alreadyListedStatus(userId));
+        reportStatus(alreadyListedStatus(userId));
         return;
       }
       await saveIdentities(withIdentity(identities, identity));
-      broadcastStatus(addedStatus(userId, outcome));
+      reportStatus(addedStatus(userId, outcome));
     } catch (error) {
-      broadcastStatus({ kind: "error", text: `Could not add ${userId}: ${messageOf(error)}` });
+      reportStatus({ kind: "error", text: `Could not add ${userId}: ${messageOf(error)}` });
     }
   });
 }

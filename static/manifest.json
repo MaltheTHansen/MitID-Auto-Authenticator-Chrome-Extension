@@ -3,14 +3,11 @@
   "name": "MitID Auto Authenticator",
   "version": "0.1.0",
   "description": "Approves MitID pre-production Login requests for your test Identities.",
-  "permissions": ["storage", "sidePanel"],
+  "permissions": ["storage"],
   "host_permissions": ["https://pp.mitid.dk/*"],
   "background": {
     "service_worker": "background.js",
     "type": "module"
-  },
-  "side_panel": {
-    "default_path": "sidepanel.html"
   },
   "options_ui": {
     "page": "options.html",
@@ -18,6 +15,7 @@
   },
   "action": {
     "default_title": "MitID Auto Authenticator",
+    "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon-16.png",
       "32": "icons/icon-32.png"

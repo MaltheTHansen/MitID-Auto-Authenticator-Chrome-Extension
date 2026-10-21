@@ -1,5 +1,6 @@
 import { type Identity, withIdentityMoved, withoutIdentity } from "./identity.js";
-import { APPROVE_FIRST_IDENTITY_COMMAND, onStatus, sendCommand, type Status } from "./messages.js";
+import { APPROVE_FIRST_IDENTITY_COMMAND, sendCommand } from "./messages.js";
+import { loadLatestStatus, onStatusReported, type Status } from "./status.js";
 import { loadIdentities, onIdentitiesChanged, saveIdentities } from "./store.js";
 
 const addForm = document.querySelector<HTMLFormElement>("#add-form")!;
@@ -24,7 +25,8 @@ identityList.addEventListener("click", (event) => {
 
 document.querySelector("#open-options")!.addEventListener("click", () => void chrome.runtime.openOptionsPage());
 
-onStatus(showStatus);
+onStatusReported(showStatus);
+void loadLatestStatus().then((status) => status && showStatus(status));
 onIdentitiesChanged(renderIdentities);
 void loadIdentities().then(renderIdentities);
 void showShortcutHint();
@@ -64,7 +66,5 @@ function showStatus(status: Status): void {
 async function showShortcutHint(): Promise<void> {
   const commands = await chrome.commands.getAll();
   const shortcut = commands.find((command) => command.name === APPROVE_FIRST_IDENTITY_COMMAND)?.shortcut;
-  shortcutHint.textContent = shortcut
-    ? `${shortcut} approves the first Identity.`
-    : "No shortcut set. Assign one on the browser's extension shortcuts page.";
+  shortcutHint.textContent = shortcut ? `${shortcut} approves the first Identity` : "No shortcut set";
 }

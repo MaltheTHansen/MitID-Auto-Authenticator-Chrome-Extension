@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>MitID Auto Authenticator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="popup">
+    <header class="band">MitID Auto Authenticator</header>
+
+    <main>
+      <form id="add-form" autocomplete="off">
+        <div class="field-row">
+          <input id="user-id" placeholder="Add Identity, e.g. Theo404" aria-label="MitID user ID to add" required />
+          <button type="submit">Add</button>
+        </div>
+      </form>
+
+      <div id="status" role="status" hidden>
+        <div class="text"></div>
+        <div class="detail"></div>
+      </div>
+
+      <ol id="identities"></ol>
+      <p id="empty" class="muted" hidden>No Identities yet. Add one above, or import a mitid_users.txt in Options.</p>
+    </main>
+
+    <footer class="band">
+      <span id="shortcut-hint" class="muted"></span>
+      <button id="open-options" class="icon" type="button" title="Options" aria-label="Options">⚙</button>
+    </footer>
+
+    <template id="identity-row">
+      <li class="identity">
+        <span class="user-id"></span>
+        <button type="button" data-action="approve" class="primary">Approve</button>
+        <button type="button" data-action="up" class="icon" title="Move up" aria-label="Move up">↑</button>
+        <button type="button" data-action="down" class="icon" title="Move down" aria-label="Move down">↓</button>
+        <button type="button" data-action="remove" class="icon" title="Remove from list" aria-label="Remove from list">✕</button>
+      </li>
+    </template>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

@@ -26,14 +26,14 @@ Turn on **Developer mode**, click **Load unpacked** and pick `dist`. Pin the ext
 This repo does not contain the credential for the MitID pre-production admin API, and you need it to add Identities. Approving logins for Identities already in your list works without it.
 
 1. Get a client ID and client secret for the MitID pre-production admin API yourself. They're not provided here.
-2. Open the options page with ⚙ in the side panel.
+2. Open the options page with ⚙ in the popup.
 3. Enter both values under **MitID admin credential** and click **Save**.
 
 The credential is stored in your browser profile only. Never commit it to this repo.
 
 ## Use
 
-1. Click the toolbar icon to open the side panel. Where the browser has no side panel, it opens as a small window instead.
+1. Click the toolbar icon to open the popup. Approving keeps running in the background if the popup closes, and reopening it shows the latest result.
 2. Type a MitID user ID (e.g. `Theo404`) and press Enter to add an Identity:
    - If it exists in MitID pre-production and has a Simulator, it's just added to your list.
    - If it exists without a Simulator, a Simulator is created for it.
@@ -44,7 +44,7 @@ The credential is stored in your browser profile only. Never commit it to this r
 
 ## Options
 
-Open the options page with ⚙ in the side panel.
+Open the options page with ⚙ in the popup.
 
 - **MitID admin credential.** The client ID and secret used to add Identities. See [Add the MitID admin credential yourself](#add-the-mitid-admin-credential-yourself).
 - **Import / export.** Paste the lines of the console or Windows app's `mitid_users.txt` (`userId,identityId,authenticatorId`) and click Import to bring your existing Identities over. Export puts your list in the same format.
@@ -65,6 +65,6 @@ npm run package  # build, then zip dist to release/mitid-auto-authenticator-<ver
 
 To release, bump `version` in `static/manifest.json`, run `npm run package` and share the zip. Users unzip it and use Load unpacked, so they don't need Node or the code. The zip has no credential either; everyone adds it in Options.
 
-- `src/background.ts` is the service worker. It handles the shortcut, toolbar button and commands from the side panel.
+- `src/background.ts` is the service worker. It handles the shortcut, toolbar button and commands from the popup.
 - `src/mitid/` holds the MitID API calls.
 - Pages and the manifest live in `static/`.

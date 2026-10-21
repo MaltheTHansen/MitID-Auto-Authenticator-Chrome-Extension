@@ -1,0 +1,16 @@
+{
+  "name": "mitid-auto-authenticator-extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "package": "node scripts/package.mjs",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.3.6",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}

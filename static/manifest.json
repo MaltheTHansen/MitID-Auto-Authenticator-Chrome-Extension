@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "MitID Auto Authenticator",
+  "version": "0.1.0",
+  "description": "Approves MitID pre-production Login requests for your test Identities.",
+  "permissions": ["storage", "sidePanel"],
+  "host_permissions": ["https://pp.mitid.dk/*"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "action": {
+    "default_title": "MitID Auto Authenticator",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "commands": {
+    "approve-first-identity": {
+      "suggested_key": { "default": "Alt+Shift+M" },
+      "description": "Approve a Login request for the first Identity"
+    }
+  }
+}

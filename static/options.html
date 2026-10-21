@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MitID Auto Authenticator Options</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="options">
+    <h1>MitID Auto Authenticator</h1>
+
+    <section>
+      <h2>MitID admin credential</h2>
+      <p class="muted">
+        The OAuth client credential for the MitID pre-production admin API, used to add Identities. Approving works
+        without it. It is not provided with the extension. It is stored in this browser profile only.
+      </p>
+      <form id="credential-form" autocomplete="off">
+        <label for="client-id">Client ID</label>
+        <input id="client-id" />
+        <label for="client-secret">Client secret</label>
+        <input id="client-secret" type="password" />
+        <div class="field-row">
+          <button type="submit" class="primary">Save</button>
+          <span id="credential-result" class="muted" role="status"></span>
+        </div>
+      </form>
+    </section>
+
+    <section>
+      <h2>Import / export</h2>
+      <p class="muted">
+        One Identity per line, as in the console app's <code>mitid_users.txt</code>:
+        <code>userId,identityId,authenticatorId</code>. Import adds the lines whose user ID isn't already in the list.
+      </p>
+      <textarea id="users-file" rows="8" spellcheck="false"></textarea>
+      <div class="field-row">
+        <button id="import" type="button" class="primary">Import</button>
+        <button id="export" type="button">Export</button>
+      </div>
+      <p id="users-file-result" class="muted" role="status"></p>
+    </section>
+
+    <script type="module" src="options.js"></script>
+  </body>
+</html>

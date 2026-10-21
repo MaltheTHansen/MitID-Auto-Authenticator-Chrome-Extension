@@ -193,17 +193,85 @@ button.icon {
 }
 
 .identity {
-  display: flex;
-  gap: 4px;
-  align-items: center;
   padding: 6px 0;
   border-bottom: 1px solid var(--border);
 }
 
+.identity-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
 .identity .user-id {
   flex: 1;
+  padding: 4px 0;
+  border: none;
+  background: none;
   font-weight: 600;
+  text-align: left;
   overflow-wrap: anywhere;
+}
+
+.identity .user-id::before {
+  content: "▸ ";
+  color: var(--muted);
+}
+
+.identity .user-id[aria-expanded="true"]::before {
+  content: "▾ ";
+}
+
+.attention {
+  color: var(--notice);
+  cursor: help;
+}
+
+.details {
+  margin-top: 6px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--bg);
+}
+
+.detail-field {
+  display: grid;
+  grid-template-columns: 96px 1fr auto;
+  gap: 6px;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.detail-field .label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.detail-field .value {
+  overflow-wrap: anywhere;
+}
+
+.detail-field.attention .value {
+  color: var(--notice);
+  font-weight: 600;
+}
+
+.detail-field .copy {
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+.details-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+.details-error {
+  margin: 0 0 6px;
+  color: var(--error);
 }
 
 .identity:first-child .user-id::after {

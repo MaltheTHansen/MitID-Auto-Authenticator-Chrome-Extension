@@ -32,12 +32,16 @@
 
     <template id="identity-row">
       <li class="identity">
-        <span class="user-id"></span>
-        <button type="button" data-action="approve" class="primary">Approve</button>
-        <button type="button" data-action="copy-cpr" title="Copy CPR number">CPR</button>
-        <button type="button" data-action="up" class="icon" title="Move up" aria-label="Move up">↑</button>
-        <button type="button" data-action="down" class="icon" title="Move down" aria-label="Move down">↓</button>
-        <button type="button" data-action="remove" class="icon" title="Remove from list" aria-label="Remove from list">✕</button>
+        <div class="identity-row">
+          <button type="button" data-action="toggle-details" class="user-id" title="Show details"></button>
+          <span class="attention" hidden>⚠</span>
+          <button type="button" data-action="approve" class="primary">Approve</button>
+          <button type="button" data-action="copy-cpr" title="Copy CPR number">CPR</button>
+          <button type="button" data-action="up" class="icon" title="Move up" aria-label="Move up">↑</button>
+          <button type="button" data-action="down" class="icon" title="Move down" aria-label="Move down">↓</button>
+          <button type="button" data-action="remove" class="icon" title="Remove from list" aria-label="Remove from list">✕</button>
+        </div>
+        <section class="details" hidden></section>
       </li>
     </template>
 

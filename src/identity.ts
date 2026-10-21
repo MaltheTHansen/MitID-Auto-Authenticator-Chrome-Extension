@@ -1,8 +1,11 @@
+import type { IdentityDetails } from "./identityDetails.js";
+
 export interface Identity {
   userId: string;
   identityId: string;
   authenticatorId: string;
   cprNumber?: string;
+  details?: IdentityDetails;
 }
 
 export type SimulatorRef = Pick<Identity, "identityId" | "authenticatorId">;

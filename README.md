@@ -42,7 +42,13 @@ The credential is stored in your browser profile only. Never commit it to this r
 
 **Alt+Shift+M** approves the first Identity in the list without opening anything. The toolbar badge shows `…` while it waits, then `✓` or `✗`. Use ↑ / ↓ to choose which Identity is first, and change the key on the browser's shortcuts page. ✕ removes an Identity from your list only; it stays in MitID.
 
-**CPR** copies the Identity's CPR number to the clipboard. The first time, it's looked up in MitID, which needs the admin credential, and then saved with the Identity. Identities created by the extension already have it.
+**CPR** copies the Identity's CPR number to the clipboard.
+
+Click an Identity's name to expand its details:
+- name, CPR number, date of birth with age, address, email and assurance level, each with a copy button;
+- its status, plus a ⚠ on the row when the Identity or its CPR registration isn't active, or its name or address is protected.
+
+The details are looked up in MitID the first time, which needs the admin credential, and then saved with the Identity. ↻ looks them up again. Identities created by the extension already have their CPR number.
 
 ## Options
 

@@ -1,6 +1,7 @@
 import { ageOn, attentionNotes, type IdentityDetails } from "./identityDetails.js";
 
 export interface DetailsCardState {
+  userId: string;
   details?: IdentityDetails;
   loading: boolean;
   error?: string;
@@ -15,9 +16,12 @@ interface DetailField {
 }
 
 export function detailsCardContent(state: DetailsCardState, today: Date): Node[] {
-  if (state.loading && !state.details) return [element("p", "muted", "Looking up details in MitID…")];
+  const content: Node[] = [fieldRow({ label: "User ID", value: state.userId })];
+  if (state.loading && !state.details) {
+    content.push(element("p", "muted", "Looking up details in MitID…"));
+    return content;
+  }
 
-  const content: Node[] = [];
   if (state.error) content.push(element("p", "details-error", `Could not look up details: ${state.error}`));
   if (state.details) {
     content.push(...detailFields(state.details, today).filter((field) => field.value).map(fieldRow));

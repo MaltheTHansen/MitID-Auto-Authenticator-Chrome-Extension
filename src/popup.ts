@@ -1,8 +1,9 @@
 import { detailsCardContent } from "./detailsCard.js";
-import { cprNumberOf, lookUpDetails } from "./detailsLookup.js";
-import { findIdentity, type Identity, userIdKey, withIdentityMoved, withoutIdentity } from "./identity.js";
+import { lookUpDetails } from "./detailsLookup.js";
+import { findIdentity, type Identity, userIdKey, withoutIdentity } from "./identity.js";
 import { attentionNotes } from "./identityDetails.js";
-import { APPROVE_FIRST_IDENTITY_COMMAND, sendCommand } from "./messages.js";
+import { isLoginPage } from "./loginPage.js";
+import { sendCommand } from "./messages.js";
 import { loadLatestStatus, onStatusReported, reportStatus, type Status } from "./status.js";
 import { loadIdentities, onIdentitiesChanged, saveIdentities } from "./store.js";
 
@@ -12,12 +13,12 @@ const statusLine = document.querySelector<HTMLElement>("#status")!;
 const identityList = document.querySelector<HTMLOListElement>("#identities")!;
 const emptyState = document.querySelector<HTMLElement>("#empty")!;
 const rowTemplate = document.querySelector<HTMLTemplateElement>("#identity-row")!;
-const shortcutHint = document.querySelector<HTMLElement>("#shortcut-hint")!;
 
 const expandedUserIds = new Set<string>();
 const lookupsInProgress = new Set<string>();
 const lookupErrors = new Map<string, string>();
 let identities: Identity[] = [];
+let onLoginPage = false;
 
 addForm.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -37,24 +38,20 @@ onStatusReported(showStatus);
 void loadLatestStatus().then((status) => status && showStatus(status));
 onIdentitiesChanged(renderIdentities);
 void loadIdentities().then(renderIdentities);
-void showShortcutHint();
+void checkForLoginPage();
 
 async function runRowAction(button: HTMLButtonElement, userId: string): Promise<void> {
   switch (button.dataset.action) {
+    case "log-in":
+      return sendCommand({ type: "log-in", userId });
     case "approve":
       return sendCommand({ type: "approve", userId });
     case "toggle-details":
       return toggleDetails(userId);
     case "refresh-details":
       return refreshDetails(userId);
-    case "copy-cpr":
-      return copyToClipboard(userId, "CPR number", () => cprNumberOf(userId));
     case "copy":
       return copyToClipboard(userId, button.dataset.copyLabel!, async () => button.dataset.copyValue!);
-    case "up":
-      return saveIdentities(withIdentityMoved(await loadIdentities(), userId, -1));
-    case "down":
-      return saveIdentities(withIdentityMoved(await loadIdentities(), userId, 1));
     case "remove":
       return saveIdentities(withoutIdentity(await loadIdentities(), userId));
   }
@@ -107,7 +104,7 @@ function renderIdentities(latest: Identity[]): void {
   emptyState.hidden = identities.length > 0;
 }
 
-function identityRow(identity: Identity, index: number, all: Identity[]): HTMLElement {
+function identityRow(identity: Identity): HTMLElement {
   const key = userIdKey(identity.userId);
   const expanded = expandedUserIds.has(key);
   const row = rowTemplate.content.firstElementChild!.cloneNode(true) as HTMLElement;
@@ -122,15 +119,15 @@ function identityRow(identity: Identity, index: number, all: Identity[]): HTMLEl
   attention.hidden = notes.length === 0;
   attention.title = notes.join("\n");
 
-  row.querySelector<HTMLButtonElement>("[data-action=up]")!.disabled = index === 0;
-  row.querySelector<HTMLButtonElement>("[data-action=down]")!.disabled = index === all.length - 1;
+  row.querySelector<HTMLButtonElement>("[data-action=log-in]")!.hidden = !onLoginPage;
+  row.querySelector<HTMLButtonElement>("[data-action=approve]")!.classList.toggle("primary", !onLoginPage);
 
   const card = row.querySelector<HTMLElement>(".details")!;
   card.hidden = !expanded;
   if (expanded) {
     card.replaceChildren(
       ...detailsCardContent(
-        { details: identity.details, loading: lookupsInProgress.has(key), error: lookupErrors.get(key) },
+        { userId: identity.userId, details: identity.details, loading: lookupsInProgress.has(key), error: lookupErrors.get(key) },
         new Date(),
       ),
     );
@@ -145,8 +142,8 @@ function showStatus(status: Status): void {
   statusLine.querySelector(".detail")!.textContent = status.detail ?? "";
 }
 
-async function showShortcutHint(): Promise<void> {
-  const commands = await chrome.commands.getAll();
-  const shortcut = commands.find((command) => command.name === APPROVE_FIRST_IDENTITY_COMMAND)?.shortcut;
-  shortcutHint.textContent = shortcut ? `${shortcut} approves the first Identity` : "No shortcut set";
+async function checkForLoginPage(): Promise<void> {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  onLoginPage = tab?.id !== undefined && (await isLoginPage(tab.id));
+  renderIdentities(identities);
 }

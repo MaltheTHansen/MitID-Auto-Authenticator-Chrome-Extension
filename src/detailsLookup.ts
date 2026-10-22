@@ -3,11 +3,6 @@ import { type IdentityDetails, toIdentityDetails } from "./identityDetails.js";
 import { fetchAdminToken, fetchIdentityRecord } from "./mitid/adminApi.js";
 import { loadAdminCredential, loadIdentities, saveIdentities } from "./store.js";
 
-export async function cprNumberOf(userId: string): Promise<string> {
-  const identity = await listedIdentity(userId);
-  return identity.cprNumber ?? (await lookUpDetails(userId)).cprNumber;
-}
-
 export async function lookUpDetails(userId: string): Promise<IdentityDetails> {
   const identity = await listedIdentity(userId);
   const credential = await loadAdminCredential();

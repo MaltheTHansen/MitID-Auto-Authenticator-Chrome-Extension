@@ -22,7 +22,7 @@ export function markApprovalFinished(result: BadgeResult): void {
   if (approvalsRunning === 0) flashBadge(result);
 }
 
-export function flashBadge(result: BadgeResult): void {
+function flashBadge(result: BadgeResult): void {
   clearTimeout(clearTimer);
   setBadge(RESULT_BADGES[result]);
   clearTimer = setTimeout(() => void chrome.action.setBadgeText({ text: "" }), RESULT_VISIBLE_MS);

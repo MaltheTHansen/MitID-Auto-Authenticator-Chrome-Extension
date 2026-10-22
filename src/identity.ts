@@ -15,7 +15,7 @@ export function findIdentity(identities: readonly Identity[], userId: string): I
 }
 
 export function withIdentity(identities: readonly Identity[], identity: Identity): Identity[] {
-  return [...identities, identity];
+  return [identity, ...identities];
 }
 
 export function withoutIdentity(identities: readonly Identity[], userId: string): Identity[] {
@@ -26,14 +26,9 @@ export function withIdentityUpdated(identities: readonly Identity[], updated: Id
   return identities.map((identity) => (sameUserId(identity.userId, updated.userId) ? updated : identity));
 }
 
-export function withIdentityMoved(identities: readonly Identity[], userId: string, offset: -1 | 1): Identity[] {
-  const from = identities.findIndex((identity) => sameUserId(identity.userId, userId));
-  const to = from + offset;
-  if (from < 0 || to < 0 || to >= identities.length) return [...identities];
-
-  const reordered = [...identities];
-  [reordered[from], reordered[to]] = [reordered[to]!, reordered[from]!];
-  return reordered;
+export function withIdentityFirst(identities: readonly Identity[], userId: string): Identity[] {
+  const identity = findIdentity(identities, userId);
+  return identity ? [identity, ...withoutIdentity(identities, userId)] : [...identities];
 }
 
 export function mergeIdentities(

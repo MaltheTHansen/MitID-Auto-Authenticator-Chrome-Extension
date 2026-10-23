@@ -2,6 +2,11 @@
 
 Approves MitID pre-production Login requests for your test Identities, so testing MitID login flows doesn't need a phone or the MitID test tool. It's the browser version of [MitIdAutoAuthenticator](https://github.com/ChristianMorup/MitIdAutoAuthenticator). See [GLOSSARY.md](GLOSSARY.md) for the terms used.
 
+<p>
+  <img src="docs/screenshots/login-page-panel.png" alt="The MitID login page with the extension's panel beside the MitID box, listing Identities with a Log in button each" height="340">
+  <img src="docs/screenshots/popup.png" alt="The toolbar popup with a field to add an Identity, the latest result and an Identity expanded to show its details" height="340">
+</p>
+
 Works in Chrome, Edge and Brave (Manifest V3).
 
 ## Install
